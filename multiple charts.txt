@@ -1,0 +1,161 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v3.json",
+  "title": "Event counts from all indexes",
+  "data":[
+    {
+      "name":"sample_data6",
+      "url":{ 
+        "index":"kibana_sample_data_ecommerce",
+        "body":{
+        "size": 0,
+        "aggs": {
+          "my_date_histo": {
+            "date_histogram": {
+              "field": "order_date",
+              "calendar_interval": "1d"
+            },
+            "aggs": {
+              "the_sum": {
+                "sum": { "field": "taxful_total_price" }
+            },
+            "the_movavg": {
+              "moving_fn": {
+                "buckets_path": "the_sum",
+                "window": 10,
+                "shift":1,
+                "script": "MovingFunctions.unweightedAvg(values)"
+            }
+        }
+      }
+    }
+  }
+      }
+      },
+       "format": {
+         "property": "aggregations.my_date_histo.buckets"
+       }
+    },
+    
+    {
+      "name":"sample_data6women",
+      "url":{ 
+        "index":"kibana_sample_data_ecommerce",
+        "body":{
+        "size": 0,
+        "query": {
+          "constant_score": {
+            "filter": {
+              "match": { "category": "Women's Clothing" }
+            }
+          }
+        },
+        "aggs": {
+          "my_date_histowomen": {
+            "date_histogram": {
+              "field": "order_date",
+              "calendar_interval": "1d"
+            },
+            "aggs": {
+              "the_sum": {
+                "sum": { "field": "taxful_total_price" }
+            },
+            "the_movavg": {
+              "moving_fn": {
+                "buckets_path": "the_sum",
+                "window": 10,
+                "shift":1,
+                "script": "MovingFunctions.unweightedAvg(values)"
+            }
+        }
+      }
+    }
+  }
+      }
+      },
+       "format": {
+         "property": "aggregations.my_date_histowomen.buckets"
+       }
+    },
+    {
+      "name":"sample_data6men",
+      "url":{ 
+        "index":"kibana_sample_data_ecommerce",
+        "body":{
+        "size": 0,
+        "query": {
+          "constant_score": {
+            "filter": {
+              "match": { "category": "Men's Clothing" }
+            }
+          }
+        },
+        "aggs": {
+          "my_date_histomen": {
+            "date_histogram": {
+              "field": "order_date",
+              "calendar_interval": "1d"
+            },
+            "aggs": {
+              "the_sum": {
+                "sum": { "field": "taxful_total_price" }
+            },
+            "the_movavg": {
+              "moving_fn": {
+                "buckets_path": "the_sum",
+                "window": 10,
+                "shift":1,
+                "script": "MovingFunctions.unweightedAvg(values)"
+            }
+        }
+      }
+    }
+  }
+      }
+      },
+       "format": {
+         "property": "aggregations.my_date_histomen.buckets"
+       }
+    }
+  ],
+    "scales": [
+    {
+      "name": "yscale",
+      "type": "linear",
+      "zero": true,
+      "domain": {"data": "sample_data6", "field": "the_movavg.value"},
+      "range": "height"
+    },
+    {
+      "name": "xscale",
+      "type": "time",
+      "domain": {"data": "sample_data6", "field": "key"},
+      "range": "width"
+    }
+  ],
+  "axes": [
+    {"scale": "yscale", "orient": "left"},
+    {"scale": "xscale", "orient": "bottom"}
+  ],
+  "marks": [
+    {
+      "type": "line",
+      "from": {"data": "sample_data6men"},
+      "encode": {
+        "update": {
+          "x": {"scale": "xscale", "field": "key"},
+          "y": {"scale": "yscale", "field": "the_movavg.value"}
+        }
+      }
+    },
+    {
+      "type": "line",
+      "from": {"data": "sample_data6women"},
+      "encode": {
+        "update": {
+          "x": {"scale": "xscale", "field": "key"},
+          "y": {"scale": "yscale", "field": "the_movavg.value"}
+        }
+      }
+    }
+  ]
+}
